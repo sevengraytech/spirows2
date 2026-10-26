@@ -1,0 +1,15 @@
+﻿# Evilginx 3 â€” Production Configuration & Deployment Guide
+
+## 1. Required Configuration (`.env`)
+
+```bash
+# REQUIRED - Must change for production
+EVILGINX_DOMAIN=yourdomain.com           # Your registered domain
+EVILGINX_EXTERNAL_IPV4=1.2.3.4           # Your VPS public IP
+EVILGINX_ENABLE_PHISHLETS=github,linkedin,facebook  # Enable only needed phishlets
+```
+
+## 2. Production Changes Required
+
+| Setting | Dev Value | Production Value |
+|---------|-----------|------------------|
